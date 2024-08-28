@@ -1,0 +1,108 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+######################################################################################################
+# 
+# Here you can configure the rules for the proxy.
+# This example is configuration of encrypt rule.
+# 
+######################################################################################################
+
+databaseName: local-sharding-db
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/shard_order?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=UTF-8&jdbcCompliantTruncation=false
+    username: homestead
+    password: secret
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  master_ds:
+    url: jdbc:mysql://192.168.73.131:3306/sharding_order?serverTimezone=Asia/Shanghai&useSSL=false
+    username: imooc
+    password: Imooc@123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+  slave_ds_0:
+    url: jdbc:mysql://192.168.73.130:3306/sharding_order?serverTimezone=Asia/Shanghai&useSSL=false
+    username: imooc
+    password: Imooc@123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+shardingRule:
+  masterSlaveRules:
+    ds_0:
+      masterDataSourceName: master_ds
+      slaveDataSourceNames:
+        - slave_ds_0
+  tables:
+    order:
+      actualDataNodes: ds_${0..1}.order_${1..2}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: order_${order_id % 2 + 1}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: order_id
+    order_item:
+      actualDataNodes: ds_${0..1}.order_item_${1..2}
+      tableStrategy:
+        inline:
+          shardingColumn: order_id
+          algorithmExpression: order_item_${order_id % 2 + 1}
+      keyGenerator:
+        type: SNOWFLAKE
+        column: id
+  defaultDatabaseStrategy:
+    inline:
+      shardingColumn: user_id
+      algorithmExpression: ds_${user_id % 2}
+  defaultTableStrategy:
+    none:
+  defaultDataSourceName: ds_0
+rules:
+  - !ENCRYPT
+    encryptors:
+      aes_encryptor:
+        type: AES
+        props:
+          aes-key-value: jdTnnHydXxzIe4ce1
+      idcard_aes_encryptor:
+        type: IDCardAES
+        props:
+          aes-key-value: jdTnnHydXxzIe4ce1
+      md5_encryptor:
+        type: MD5
+    queryWithCipherColumn: true #false 查询跟读取都使用明文字段
+    tables:
+      order: #订单表
+        columns:
+          identity_card1: #身份证号码
+            plainColumn: identity_card #明文文档
+            cipherColumn: identity_card_cipher #加密
+            encryptorName: idcard_aes_encryptor #加密配置
+          phone: #手机号码
+            plainColumn: phone #明文文档
+            cipherColumn: phone_cipher #加密
+            encryptorName: aes_encryptor #加密配置

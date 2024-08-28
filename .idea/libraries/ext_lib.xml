@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="ext-lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ext-lib/shardingsphere-hcalgo-1.0-SNAPSHOT.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ext-lib/commons-compiler-3.1.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ext-lib/janino-3.1.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ext-lib/mysql-connector-java-8.0.30.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

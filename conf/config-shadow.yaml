@@ -1,0 +1,26 @@
+schemaName: sharding_db
+#影子库
+####在现在微服务盛行的情况下，系统被切分的很细，这对于测试，尤其是压测是非常难的，如果在测试环境部署一套和生产一模一样的环境，是非常浪费资源的。而如果只部署一两个服务，又不能进行全链路的整体压测。而我们的解决方案是在生产环境直接进行压测，得出的结果也是真实有效的。那么这些压测的数据怎么办，如果不做特殊的处理，就和生产的真实数据混在一起了。
+#这里我们就需要配置影子数据库了，所有压测数据都会有一个特殊的标识，sharding-proxy根据这个特殊的标识，将压测的数据分配到影子库中，和生产的真实数据隔离开，我们看看具体怎么配置
+dataSources:
+  ds:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+  shadow_ds:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_1?serverTimezone=UTC&useSSL=false
+    username: root
+    password:
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+
+shadowRule:
+  column: shadow
+  shadowMappings:
+    ds: shadow_ds

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="shardingsphere-agent-logging-file-5.3.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/agent/plugins/logging/shardingsphere-agent-logging-file-5.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -51,3 +51,5 @@ Licensing
 ===============================================================================
 
 This software is licensed under the terms you may find in the file named "LICENSE" in this directory.
+主从同步策略
+# https://blog.csdn.net/August_Leaf/article/details/135970512
